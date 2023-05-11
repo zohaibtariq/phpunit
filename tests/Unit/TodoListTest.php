@@ -4,7 +4,6 @@ namespace Tests\Unit;
 
 use App\Models\TodoList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class TodoListTest extends TestCase
@@ -60,7 +59,35 @@ class TodoListTest extends TestCase
     {
         $this->withExceptionHandling();
         $this->postJson(route('todo-list.store'))
-            ->assertUnprocessable()
+            ->assertUnprocessable()  // ->assertStatus(422)
+            ->assertJsonValidationErrors(['name']);
+    }
+
+    public function test_delete_todo_list()
+    {
+        $todoList = $this->todoList->last();
+        $this->deleteJson(route('todo-list.destroy', $todoList->id))
+            ->assertNoContent();
+        $this->assertDatabaseMissing('todo_lists', ['id' => $todoList->id]);
+        $this->assertDatabaseMissing('todo_lists', ['id' => $todoList->id, 'name' => $this->todoName]);
+        $this->assertDatabaseMissing('todo_lists', ['id' => $todoList->id, 'name' => $todoList->name]);
+    }
+
+    public function test_update_todo_list()
+    {
+        $newName = 'New Name Of To Do Item';
+        $todoList = $this->todoList->last();
+        $this->patchJson(route('todo-list.update', $todoList->id), ['name' => $newName])
+            ->assertOk();
+        $this->assertDatabaseHas('todo_lists', ['id' => $todoList->id, 'name' => $newName]);
+    }
+
+    public function test_update_name_is_required_field()
+    {
+        $todoList = $this->todoList->last();
+        $this->withExceptionHandling();
+        $this->patchJson(route('todo-list.update', $todoList->id))
+            ->assertUnprocessable()  // ->assertStatus(422)
             ->assertJsonValidationErrors(['name']);
     }
 }

@@ -13,15 +13,30 @@ class TodoListController extends Controller
         return response(TodoList::all());
     }
 
-    function show(TodoList $id)
+    function show(TodoList $todoList)
     {
         // TodoList::findOrFail($id); // no need of this line if we use route modle binding means type hint class in param
-        return response($id);
+        return response($todoList);
     }
 
     function store(Request $request)
     {
         $request->validate(['name' => ['required']]);
         return response(TodoList::create($request->all()), Response::HTTP_CREATED);
+    }
+
+    function destroy(TodoList $todoList)
+    {
+        $todoList->delete();
+        // dd(TodoList::find($todoList)->toArray());
+        return response('', Response::HTTP_NO_CONTENT);
+    }
+
+    function update(Request $request, TodoList $todoList)
+    {
+        $request->validate(['name' => ['required']]);
+        return $todoList->update($request->all());
+        // dd(TodoList::find($todoList)->toArray());
+        // return response('', Response::HTTP_NO_CONTENT);
     }
 }
