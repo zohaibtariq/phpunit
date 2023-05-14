@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TodoListRequest;
 use App\Models\TodoList;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TodoListController extends Controller
@@ -19,24 +19,19 @@ class TodoListController extends Controller
         return response($todoList);
     }
 
-    function store(Request $request)
+    function store(TodoListRequest $request)
     {
-        $request->validate(['name' => ['required']]);
         return response(TodoList::create($request->all()), Response::HTTP_CREATED);
     }
 
     function destroy(TodoList $todoList)
     {
         $todoList->delete();
-        // dd(TodoList::find($todoList)->toArray());
         return response('', Response::HTTP_NO_CONTENT);
     }
 
-    function update(Request $request, TodoList $todoList)
+    function update(TodoListRequest $request, TodoList $todoList)
     {
-        $request->validate(['name' => ['required']]);
-        return $todoList->update($request->all());
-        // dd(TodoList::find($todoList)->toArray());
-        // return response('', Response::HTTP_NO_CONTENT);
+        return $todoList->update($request->all());  // it will auto send 200 status
     }
 }

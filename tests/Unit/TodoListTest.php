@@ -17,9 +17,7 @@ class TodoListTest extends TestCase
     {
         parent::setUp();
         $this->todoName = 'todo list item ' . rand(1, 99);
-        // TodoList::factory()->count(1)->create() && TodoList::factory()->create() are not same
-        // count() creates array of objects while without count give direct individual model object
-        $this->todoList = TodoList::factory()->count(2)->create([
+        $this->todoList = $this->createToDoLists([
             'name' => $this->todoName
         ]);
     }
