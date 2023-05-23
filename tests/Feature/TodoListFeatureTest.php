@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Models\TodoList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class TodoListTest extends TestCase
+class TodoListFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -22,9 +22,6 @@ class TodoListTest extends TestCase
         ]);
     }
 
-    /**
-     * get all todo list unit test
-     */
     public function test_fetch_todo_list(): void
     {
         $response = $this->getJson(route('todo-list.index'));

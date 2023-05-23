@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 // use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class TaskTest extends TestCase
+class TaskFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,16 +17,16 @@ class TaskTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->tasks = $this->createTasks();
-        $this->todoList = $this->createTasks();
+        $this->todoList = $this->createToDoLists();
+        // $this->tasks = $this->createTasks(['todo_list_id' => $this->todoList->last()->id]); // this will created related task
+        $this->tasks = $this->createTasks();  // this will create unrelated task
     }
 
-    /**
-     * A basic feature test example.
-     */
     public function test_fetch_all_tasks_of_a_todo_list(): void
     {
+        // task created inside constructor is one unrelated task so it must not be count to verify the test is showing counting only related task from todo
         $todoList = $this->todoList->last();
+        $this->createTasks(['todo_list_id' => $todoList->id]);
         $response = $this->getJson(route('todo-list.task.index', $todoList->id))->assertOk()->json();
         $this->assertEquals(count($this->tasks), count($response));
     }
@@ -35,7 +35,7 @@ class TaskTest extends TestCase
     {
         $todoList = $this->todoList->last();
         $task = Task::factory()->make();
-        $taskData = ['title' => $task->title];
+        $taskData = ['title' => $task->title, 'todo_list_id' => $todoList->id];
         $this->postJson(route('todo-list.task.store', $todoList->id), $taskData)
             ->assertCreated();
         $this->assertDatabaseHas('tasks', $taskData);
