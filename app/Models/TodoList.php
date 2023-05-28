@@ -19,6 +19,11 @@ class TodoList extends Model
         return $this->hasMany(Task::class);
     }
 
+    function user(): HasOne
+    {
+        return $this->hasOne(User::class);
+    }
+
     public static function boot(): void
     {
         parent::boot();

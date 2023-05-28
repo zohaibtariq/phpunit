@@ -32,6 +32,6 @@ class TodoListController extends Controller
 
     function update(TodoListRequest $request, TodoList $todoList)
     {
-        return $todoList->update($request->all());  // it will auto send 200 status
+        return $todoList->update($request->validated());  // it will auto send 200 status
     }
 }

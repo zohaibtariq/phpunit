@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use App\Models\TodoList;
 use Illuminate\Http\Request;
@@ -15,9 +16,9 @@ class TaskController extends Controller
         // return Task::where('todo_list_id', $todo_list->id)->get();
     }
 
-    function store(Request $request, TodoList $todo_list)
+    function store(TaskRequest $request, TodoList $todo_list)
     {
-        return $todo_list->tasks()->create($request->all());
+        return $todo_list->tasks()->create($request->validated());
         // $request->request->add(['todo_list_id' => $todo_list->id]);
         // return Task::create($request->all());
     }

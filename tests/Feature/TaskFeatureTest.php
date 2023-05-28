@@ -14,10 +14,12 @@ class TaskFeatureTest extends TestCase
     private $tasks;
     private $todoList = [];
 
+    protected $currentAuthUser;
+
     public function setUp(): void
     {
         parent::setUp();
-        $this->createAuthUser();
+        $this->currentAuthUser = $this->createAuthUser();
         $this->todoList = $this->createToDoLists();
         // $this->tasks = $this->createTasks(['todo_list_id' => $this->todoList->last()->id]); // this will created related task
         $this->tasks = $this->createTasks();  // this will create unrelated task
@@ -36,10 +38,25 @@ class TaskFeatureTest extends TestCase
     {
         $todoList = $this->todoList->last();
         $task = Task::factory()->make();
-        $taskData = ['title' => $task->title, 'todo_list_id' => $todoList->id];
+        $label = $this->createLabel(['user_id' => $this->currentAuthUser->id]);
+        $taskData = ['title' => $task->title, 'description' => 'long description', 'todo_list_id' => $todoList->id, 'label_id' => $label->id];
 
         $response = $this->postJson(route('todo-list.task.store', $todoList->id), $taskData)
             ->assertCreated();
+
+        $this->assertDatabaseHas('tasks', $taskData);
+        $this->assertDatabaseHas('tasks', ['id' => $response->json()['id'], 'status' => Task::NOT_STARTED]);
+    }
+
+    public function test_store_task_without_label()
+    {
+        $todoList = $this->todoList->last();
+        $task = Task::factory()->make();
+        $taskData = ['title' => $task->title, 'description' => 'long description', 'todo_list_id' => $todoList->id];
+
+        $response = $this->postJson(route('todo-list.task.store', $todoList->id), $taskData)
+            ->assertCreated();
+
         $this->assertDatabaseHas('tasks', $taskData);
         $this->assertDatabaseHas('tasks', ['id' => $response->json()['id'], 'status' => Task::NOT_STARTED]);
     }

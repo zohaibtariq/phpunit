@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\LabelController;
 use App\Http\Controllers\TodoListController;
-use Illuminate\Http\Request;
+//use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('todo-list.task', TaskController::class)
         ->except('show')
         ->shallow();
+    Route::apiResource('label', LabelController::class);
 });
 
 Route::post('register', \App\Http\Controllers\Auth\RegisterController::class)
