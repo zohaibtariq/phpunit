@@ -16,14 +16,17 @@ class TodoListFeatureTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $user = $this->createAuthUser();
         $this->todoName = 'todo list item ' . rand(1, 99);
         $this->todoList = $this->createToDoLists([
-            'name' => $this->todoName
+            'name' => $this->todoName,
+            'user_id' => $user->id
         ]);
     }
 
     public function test_fetch_todo_list(): void
     {
+        $this->createToDoLists();
         $response = $this->getJson(route('todo-list.index'));
         $response->assertJson($this->todoList->toArray());
         $this->assertEquals(2, count($response->json()));

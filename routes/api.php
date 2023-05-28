@@ -20,5 +20,15 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::apiResource('todo-list', TodoListController::class);
-Route::apiResource('todo-list.task', TaskController::class)->except('show')->shallow();
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('todo-list', TodoListController::class);
+    Route::apiResource('todo-list.task', TaskController::class)
+        ->except('show')
+        ->shallow();
+});
+
+Route::post('register', \App\Http\Controllers\Auth\RegisterController::class)
+    ->name('register');
+
+Route::post('login', \App\Http\Controllers\Auth\LoginController::class)
+    ->name('login');

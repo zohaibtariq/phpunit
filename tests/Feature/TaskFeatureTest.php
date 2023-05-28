@@ -17,6 +17,7 @@ class TaskFeatureTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->createAuthUser();
         $this->todoList = $this->createToDoLists();
         // $this->tasks = $this->createTasks(['todo_list_id' => $this->todoList->last()->id]); // this will created related task
         $this->tasks = $this->createTasks();  // this will create unrelated task
@@ -36,9 +37,11 @@ class TaskFeatureTest extends TestCase
         $todoList = $this->todoList->last();
         $task = Task::factory()->make();
         $taskData = ['title' => $task->title, 'todo_list_id' => $todoList->id];
-        $this->postJson(route('todo-list.task.store', $todoList->id), $taskData)
+
+        $response = $this->postJson(route('todo-list.task.store', $todoList->id), $taskData)
             ->assertCreated();
         $this->assertDatabaseHas('tasks', $taskData);
+        $this->assertDatabaseHas('tasks', ['id' => $response->json()['id'], 'status' => Task::NOT_STARTED]);
     }
 
     public function test_task_delete()

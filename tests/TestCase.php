@@ -4,16 +4,21 @@ namespace Tests;
 
 use App\Models\Task;
 use App\Models\TodoList;
+use App\Models\User;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Laravel\Sanctum\Sanctum;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use WithFaker;
 
     function setUp(): void
     {
         parent::setUp();
         $this->withoutExceptionHandling();
+        $this->setUpFaker();
     }
 
     function createToDoLists($args = [])
@@ -27,4 +32,15 @@ abstract class TestCase extends BaseTestCase
     {
         return Task::factory()->count(1)->create($args);
     }
+
+    function createUser($args = []){
+        return User::factory()->create($args);
+    }
+
+    function createAuthUser(){
+        $user = $this->createUser();
+        Sanctum::actingAs($user);
+        return $user;
+    }
+
 }
